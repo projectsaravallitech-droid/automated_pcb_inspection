@@ -2,7 +2,6 @@
 using namespace cv;
 
 int main() {
-    // Open default webcam (0 = first camera)
     VideoCapture cap(0);
 
     if (!cap.isOpened()) {
@@ -13,7 +12,7 @@ int main() {
     Mat frame;
 
     while (true) {
-        cap.read(frame);  // Capture frame
+        cap.read(frame);  
 
         if (frame.empty()) {
             std::cout << "Error: Blank frame grabbed\n";
@@ -22,7 +21,6 @@ int main() {
 
         imshow("USB Webcam Stream", frame);
 
-        // Press 'q' to exit
         if (waitKey(1) == 'q')
             break;
     }
@@ -31,3 +29,4 @@ int main() {
     destroyAllWindows();
     return 0;
 }
+
