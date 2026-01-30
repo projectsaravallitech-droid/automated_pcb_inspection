@@ -1,0 +1,34 @@
+What are C++ Design Patterns?
+
+Design patterns are reusable solutions to common programming problems.
+
+They’re not code you copy-paste.
+They’re ideas or blueprints for structuring code in a smart, scalable way.
+
+C++ design patterns are reusable, proven solutions to common software design problems that help developers create code that is more modular, flexible, maintainable, and scalable.  They are not complete code implementations but rather templates or blueprints for solving specific design challenges in object-oriented programming. 
+
+These patterns are typically categorized into three main groups:
+
+Creational Patterns: Focus on object creation mechanisms. Examples include:
+	
+Singleton: Ensures a class has only one instance and provides a global access point to it.
+Factory Method: Defers instantiation to subclasses, allowing a class to let subclasses decide which class to instantiate.
+Abstract Factory: Creates families of related or dependent objects without specifying their concrete classes.
+Builder: Separates the construction of a complex object from its representation, allowing the same construction process to create different representations.
+Prototype: Creates new objects by copying an existing prototype.
+
+Structural Patterns: Deal with the composition of classes or objects. Examples include:
+
+Adapter: Allows incompatible interfaces to work together.
+Decorator: Adds responsibilities to objects dynamically without altering their structure.
+Composite: Composes objects into tree structures to represent part-whole hierarchies.
+Facade: Provides a simplified interface to a complex subsystem.
+Proxy: Acts as a placeholder for another object to control access. 
+
+Behavioral Patterns: Address communication and responsibility among objects. Examples include:
+
+Strategy: Defines a family of algorithms, encapsulates each one, and makes them interchangeable.
+Observer: Establishes a one-to-many dependency between objects so that when one object changes state, all dependents are notified.
+Command: Encapsulates a request as an object, enabling parameterization of clients with different requests.
+State: Allows an object to alter its behavior when its internal state changes.
+Template Method: Defines the skeleton of an algorithm in a method, deferring some steps to subclasses. 
