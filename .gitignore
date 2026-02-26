@@ -1,0 +1,32 @@
+# YOLO Model (large file - should be downloaded separately)
+yolo11n.onnx
+
+# Debug logs
+debug_log.txt
+
+# Build outputs (MSVC)
+*.exe
+*.obj
+*.lib
+*.exp
+*.ilk
+*.pdb
+
+# Generated files from the application (captures and recordings)
+# Note: images.png is kept in the repo
+cap_*.png
+rec_*.avi
+
+# IDE and build directories
+.vs/
+.vscode/
+Debug/
+Release/
+build/
+*.sln
+*.vcxproj
+*.vcxproj.user
+
+# OS files
+.DS_Store
+Thumbs.db

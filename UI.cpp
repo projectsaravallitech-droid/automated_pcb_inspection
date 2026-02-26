@@ -73,15 +73,17 @@ void UI::inspectionLoop() {
     while (!shouldExit) {
         // Get frame from capture queue (30 fps input)
         if (frameQueue.tryDequeue(frame)) {
-            // Run detection on the frame (30 fps)
-            vector<Detection> detections;
+            // Always run detection on the frame at 30 fps
+            // Mark this frame with detections if the user enabled the inspection toggle
+            Mat detectedFrame = frame.clone();
             if (isInspection) {
-                inspector.detect(frame);
-                // The inspector modifies the frame with bounding boxes
+                inspector.detect(detectedFrame);
             }
             
+            vector<Detection> detections;
+            
             // Add to processed queue for display
-            processedQueue.enqueue(make_pair(frame, detections));
+            processedQueue.enqueue(make_pair(detectedFrame, detections));
         } else {
             // No frame available, sleep briefly
             this_thread::sleep_for(chrono::milliseconds(1));
@@ -130,13 +132,10 @@ void UI::displayLoop() {
     namedWindow(windowName);
     setMouseCallback(windowName, onMouse, this);
 
-    Mat frame;
     Mat displayFrame = noSignalImage.clone(); 
     
     // Create a canvas larger than the video to hold buttons below it
     Mat canvas(600, 640, CV_8UC3, Scalar(50, 50, 50));
-    
-    int frameCount = 0; // Frame counter for throttling to 10 fps
 
     while (!shouldExit) {
         auto startTime = std::chrono::steady_clock::now();
@@ -144,8 +143,7 @@ void UI::displayLoop() {
         bool isRunning = stream.isRunning();
         bool isConnected = stream.isConnected();
 
-        // Try to get a new frame from processed queue (runs at 30 fps internally)
-        // But we only display every 3rd frame (10 fps)
+        // Try to get a new frame from processed queue
         if (isRunning && isConnected) {
             std::pair<Mat, vector<Detection>> processed;
             
@@ -172,13 +170,11 @@ void UI::displayLoop() {
                 
                 if (isRecording) {
                     if (!videoWriter.isOpened()) {
-                        // Start recording
                         std::string filename = "rec_" + std::to_string(std::chrono::system_clock::now().time_since_epoch().count()) + ".avi";
                         videoWriter.open(filename, VideoWriter::fourcc('M','J','P','G'), 10, Size(640, 480));
                     }
                     if (videoWriter.isOpened()) {
                         videoWriter.write(displayFrame);
-                        // Add recording indicator
                         circle(displayFrame, Point(620, 20), 10, Scalar(0, 0, 255), -1);
                     }
                 } else {
@@ -186,7 +182,6 @@ void UI::displayLoop() {
                         videoWriter.release();
                     }
                 }
-                frameCount++;
             }
         } else {
             displayFrame = noSignalImage.clone();
@@ -210,27 +205,33 @@ void UI::displayLoop() {
         drawButtons(canvas, isRunning);
         imshow(windowName, canvas);
 
-        // Handle UI events
-        char key = (char)waitKey(1);
-
+        // Handle UI events with small timeout
+        int key = waitKey(10);  // 10ms timeout instead of 1ms to avoid busy waiting
+        
         if (key == 'q') {
             shouldExit = true;
+            stream.stop();
         } else if (key == 's') {
             if (isRunning) stream.stop();
         } else if (key == 'r') {
             if (!isRunning) stream.start(0);
         }
 
+        // Throttle display to ~10 FPS (100ms per frame)
         auto endTime = std::chrono::steady_clock::now();
         std::chrono::duration<double, std::milli> elapsed = endTime - startTime;
         
-        int sleepTime = 100 - (int)elapsed.count(); // 100ms for 10 FPS
+        int sleepTime = 100 - (int)elapsed.count();
         if (sleepTime > 0) {
             std::this_thread::sleep_for(std::chrono::milliseconds(sleepTime));
         }
     }
     
+    // Ensure clean shutdown
     if (videoWriter.isOpened()) videoWriter.release();
+    frameQueue.set_finished();
+    processedQueue.set_finished();
+    stream.stop();
     destroyAllWindows();
 }
 

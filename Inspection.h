@@ -23,8 +23,8 @@ private:
     cv::dnn::Net net;
     std::vector<std::string> classNames;
 
-    const float SCORE_THRESHOLD = 0.7f;
-    const float NMS_THRESHOLD = 0.5f;
+    const float SCORE_THRESHOLD = 0.85f;
+    const float NMS_THRESHOLD = 0.4f;
     const cv::Size MODEL_SIZE = cv::Size(640, 640);
 
     std::vector<std::string> load_class_list();

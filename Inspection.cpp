@@ -104,10 +104,11 @@ void Inspection::detect(Mat& frame)
 
         if (maxScore > SCORE_THRESHOLD) {
             // Convert from center form to corner form
-            float x = (cx - w * 0.5f) * frame.cols;
-            float y = (cy - h * 0.5f) * frame.rows;
-            float width = w * frame.cols;
-            float height = h * frame.rows;
+            // Ensure coordinates from the YOLO output are appropriately scaled from model size to original frame
+            float x = (cx - w * 0.5f) / MODEL_SIZE.width * frame.cols;
+            float y = (cy - h * 0.5f) / MODEL_SIZE.height * frame.rows;
+            float width = w / MODEL_SIZE.width * frame.cols;
+            float height = h / MODEL_SIZE.height * frame.rows;
 
             detections.push_back(Rect((int)x, (int)y, (int)width, (int)height));
             confidences.push_back(maxScore);

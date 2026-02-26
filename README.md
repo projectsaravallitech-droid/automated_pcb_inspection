@@ -1,1 +1,0 @@
-# automated_pcb_inspection
